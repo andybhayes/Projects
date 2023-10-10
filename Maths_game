@@ -1,0 +1,125 @@
+from random import randint
+
+def number():
+    """
+    Defines how many questions will be asked
+    """
+    total = int(input("How many questions you want to answer? :"))
+    return total
+
+def multi(total):
+    """
+    Multiplication portion of the program
+    """
+    countdown = total
+    correct = 0
+    diff= input("Enter 1, 2, or 3 difficulty: ")
+
+    while countdown != 0:
+        countdown -= 1
+        if diff == "1":
+            x = randint(1, 9)
+            y = randint(1, 9)
+        elif diff == "2":
+            x = randint(11, 99)
+            y = randint(11, 99)
+        else:
+            x = randint(111, 999)
+            y = randint(111, 999)
+        z = str(x * y)
+        print(f"What is {x} * {y}?")
+        answer = input("Enter your answer here: ")
+
+        if answer == z:
+            print("\tCorrect!")
+            correct += 1
+        else:
+            print("Wrong")
+    end = correct / total * 100
+    print(f"\nYou scored {end} percent")
+
+def adds(total):
+    """
+    Addition portion of the program
+    """
+    countdown = total
+    correct = 0
+    diff = input("Enter 1, 2, or 3 difficulty: ")
+
+    while countdown != 0:
+        countdown -= 1
+        if diff == "1":
+            x = randint(1, 9)
+            y = randint(1, 9)
+        elif diff == "2":
+            x = randint(11, 99)
+            y = randint(11, 99)
+        else:
+            x = randint(111, 999)
+            y = randint(111, 999)
+        z = str(x + y)
+        print(f"What is {x} + {y}?")
+        answer = input("Enter your answer here: ")
+
+        if answer == z:
+            print("\tCorrect!")
+            correct += 1
+        else:
+            print("Wrong")
+    end = correct / total * 100
+    print(f"\nYou scored {end} percent")
+
+def subs(total):
+    """
+    Subtract portion of the program
+    """
+    countdown = total
+    correct = 0
+    diff = input("Enter 1, 2, or 3 difficulty: ")
+
+    while countdown != 0:
+        countdown -= 1
+        if diff == "1":
+            x = randint(1, 9)
+            y = randint(1, 9)
+        elif diff == "2":
+            x = randint(11, 99)
+            y = randint(11, 99)
+        else:
+            x = randint(111, 999)
+            y = randint(111, 999)
+        z = str(x - y)
+        print(f"What is {x} - {y}?")
+        answer = input("Enter your answer here: ")
+
+        if answer == z:
+            print("\tCorrect!")
+            correct += 1
+        else:
+            print("Wrong")
+    end = correct / total * 100
+    print(f"\nYou scored {end} percent")
+
+def maths_type():
+    """
+    Gives option of what type of maths question to choose
+    """
+    print("\nChoose the type of questions you would like\n")
+    print("'A' for addition, 'S' for subtract, 'M' for multiplication questions\n")
+    maths = input("Enter 'A', 'S' or 'M': ")
+
+    if maths == "A":
+        total = number()
+        adds(total)
+    elif maths == "S":
+        total = number()
+        subs(total)
+    elif maths == "M":
+        total = number()
+        multi(total)
+    else:
+        print("Please enter A, S or M")
+
+
+
+maths_type()
