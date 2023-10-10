@@ -1,0 +1,33 @@
+import requests as r
+import pandas as pd
+from io import StringIO
+
+# Send an HTTP GET request to the URL and get the content
+url = "https://www.metoffice.gov.uk/pub/data/weather/uk/climate/stationdata/aberporthdata.txt"
+response = r.get(url)
+
+# Check if the request was successful (status code 200)
+if response.status_code == 200:
+    # Extract the content of the response
+    data = response.text
+
+    # Split the content by lines and remove the header and footer
+    lines = data.splitlines()
+    table_lines = lines[7:-9]  # Adjust line numbers based on the specific format
+
+    # Join the table lines back into a single string
+    table_data = "\n".join(table_lines)
+
+    # Create a DataFrame from the table data using StringIO
+    df = pd.read_csv(StringIO(table_data), header=None, delim_whitespace=True)
+
+    # Assuming you want to add column names
+    df.columns = ["Year", "MM", "Max_Temp", "Min_Temp", "af days", "ran_mm", "sun_hours"]
+
+    # Now you have the desired DataFrame with the table data
+    print(df)
+
+    #saves the data csv to continue wangling in sql
+    df.to_csv("Unfinished_Data", index=False)
+else:
+    print("Failed to retrieve data from the URL.")
