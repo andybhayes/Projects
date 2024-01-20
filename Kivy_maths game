@@ -1,63 +1,124 @@
-"""
-UNFINISHED
-"""
-
-
-import kivy
 from kivy.app import App
-from kivy.uix.gridlayout import GridLayout
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
+from kivy.properties import ObjectProperty
 from random import randint
 
+class MathGame(BoxLayout):
 
+    num_questions = ObjectProperty()
+    difficulty = ObjectProperty()
 
-class MathQuizApp(app):
-    def build(self):
-        self.score = 0
-        self.question_number = 0
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.orientation = "vertical"
+        
+        # Main menu buttons
+        self.menu_buttons = BoxLayout()
+        self.add_button = Button(text="Addition")
+        self.sub_button = Button(text="Subtraction")
+        self.mul_button = Button(text="Multiplication")
+        self.menu_buttons.add_widget(self.add_button)
+        self.menu_buttons.add_widget(self.sub_button)
+        self.menu_buttons.add_widget(self.mul_button)
+        self.add_widget(self.menu_buttons)
+
+        # Bind buttons to functions
+        self.add_button.bind(on_press=self.start_add)
+        self.sub_button.bind(on_press=self.start_sub)
+        self.mul_button.bind(on_press=self.start_mul)
+
+        # Other attributes
         self.questions = []
+        self.score = 0
 
-        # Create a grid layout to hold widgets
-        layout = GridLayout(cols=1, spacing=10, padding=10)
+    def start_add(self, instance):
+        self.start_game("A")
 
-        # Create a label for questions
-        self.question_label = Label(text="")
-        layout.add_widget(self.question_label)
+    def start_sub(self, instance):
+        self.start_game("S")
 
-        # Create a text input for answers
-        self.answer_input = TextInput()
-        layout.add_widget(self.answer_input)
+    def start_mul(self, instance):
+        self.start_game("M")
 
-        # Create a button to check the answer
-        check_button = Button(text="Check Answer")
-        check_button.bind(on_press=self.check_answer)
-        layout.add_widget(check_button)
+    def start_game(self, _type):
+        # Clear previous game
+        self.clear_widgets()
 
-        self.next_question()
-        return layout
+        # Ask number of questions
+        self.add_widget(Label(text="How many questions?"))
+        self.num_questions = TextInput()
+        self.add_widget(self.num_questions)
 
-    def next_question(self):
-        if self.question_number < len(self.questions):
-            self.question_label.text = self.questions[self.question_number]
-            self.answer_input.text = ""
-            self.question_number += 1
-        else:
-            self.question_label.text = f"Quiz Complete! Your score: {self.score}/{len(self.questions)}"
-            self.question_number = 0
-            self.score = 0
-            self.questions = []
+        # Ask difficulty
+        self.add_widget(Label(text="Difficulty (1-3)?"))
+        self.difficulty = TextInput()
+        self.add_widget(self.difficulty)
 
-    def check_answer(self, instance):
-        if self.question_number <= len(self.questions):
-            user_answer = self.answer_input.text
-            if user_answer.isdigit():
-                if int(user_answer) == self.answers[self.question_number - 1]:
-                    self.score += 1
-                self.next_question()
-            else:
-                self.question_label.text = "Please enter a valid number."
+        # Start button
+        start_button = Button(text="Start")
+        start_button.bind(on_press=lambda instance: self.generate_questions(_type))
+        self.add_widget(start_button)
 
-if __name__ == '__main__':
-    MathQuizApp().run()
+    def generate_questions(self, _type):
+        # Clear widgets
+        self.clear_widgets()
+
+        # Generate questions
+        n = int(self.num_questions.text)
+        d = int(self.difficulty.text)
+        
+        for i in range(n):
+            if _type == "A":
+                x = randint(1, 9) if d == 1 else randint(11, 99) if d == 2 else randint(111, 999)
+                y = randint(1, 9) if d == 1 else randint(11, 99) if d == 2 else randint(111, 999)
+                q = f"{x} + {y} ="
+            elif _type == "S":
+                x = randint(1, 9) if d == 1 else randint(11, 99) if d == 2 else randint(111, 999)
+                y = randint(1, 9) if d == 1 else randint(11, 99) if d == 2 else randint(111, 999)
+                q = f"{x} - {y} ="
+            elif _type == "M":
+                x = randint(1, 9) if d == 1 else randint(11, 99) if d == 2 else randint(111, 999)
+                y = randint(1, 9) if d == 1 else randint(11, 99) if d == 2 else randint(111, 999)
+                q = f"{x} * {y} ="
+
+            self.questions.append((q, x + y))
+
+        # Display questions
+        for q in self.questions:
+            self.add_widget(Label(text=q[0]))
+            self.answer = TextInput()
+            self.add_widget(self.answer)
+
+        # Submit button
+        submit = Button(text="Submit")
+        submit.bind(on_press=lambda instance: self.check_answers(_type))
+        self.add_widget(submit)
+
+    def check_answers(self, _type):
+        # Check answers and display score
+        for q, ans in self.questions:
+            if int(self.answer.text) == ans:
+                self.score += 1
+        
+        score_label = Label(text=f"You scored {self.score}/{len(self.questions)}!")
+        self.add_widget(score_label)
+
+        # Add button to play again
+        play_again = Button(text="Play Again")
+        play_again.bind(on_press=lambda instance: self.reset(_type))
+        self.add_widget(play_again)
+
+    def reset(self, _type):
+        self.score = 0
+        self.start_game(_type)
+
+class MathGameApp(App):
+    def build(self):
+        return MathGame()
+
+if __name__ == "__main__":
+    MathGameApp().run()
