@@ -1,0 +1,53 @@
+import zipfile
+import pandas as pd
+import os
+import glob
+pd.set_option("display.width",3000)
+pd.set_option("display.max_columns",None)
+#from rich import print
+#zip_file_path=r""
+extract_dir =r""
+# with zipfile.ZipFile(zip_file_path,"r") as zip_ref:
+#     zip_ref.extractall(extract_dir)
+
+files= glob.glob(extract_dir+ "/*.csv")# thius will select all files with extract folder that are csv, removes need for a for loop
+
+"""def extract_csv_files(zip_file_path, extract_dir):    this only extracts csv files
+    with zipfile.ZipFile(zip_file_path, "r") as zip_ref:
+        for file_info in zip_ref.infolist():
+            if file_info.filename.endswith('.csv'):
+                zip_ref.extract(file_info, extract_dir)"""
+
+
+keep_columns = ["observation_id", "date_time", "longitude", "latitude", "observation_value", "value_significance", "primary_station_id", "station_name", "quality_flag", "source_id"]
+
+all_files = []
+
+for file in files:
+    file_path=os.path.join(extract_dir,file)
+    all_files.append(pd.read_csv(file_path))
+df=pd.concat(all_files,ignore_index=True)
+print(df.columns)
+df_filtered = df.loc[:, keep_columns]
+
+
+dff=df_filtered.sort_values("station_name")
+value_significance_counts = dff["value_significance"].value_counts()
+print(value_significance_counts)
+x=df["observation_value"].mean()
+
+
+"""maybe shorted value significance
+Minimum value over indicated period    62
+Maximum value over indicated period    62  only 2, should be "Mean value over indicated period", also  why?
+"""
+
+
+
+#convert  K to C
+# def tempconversion(x):   #round this off 2 dec
+#     calc=x-273.15
+#     print(round(calc,2))
+#     return round(calc, 2)
+
+# tempconversion(x)
